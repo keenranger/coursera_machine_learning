@@ -41,9 +41,10 @@ Theta2_grad = zeros(size(Theta2));
 X=[ones(m,1) X];
 for i=1:m
     z_superscript_2=Theta1*transpose(X(i,:));%(25x401)*(1x401)T=25x1
-    a_superscript_2=[1; sigmoid(z_superscript_2)];%activation,(25x1)->(26x1)
+    a_superscript_2=sigmoid(z_superscript_2);%activation
+    hidden_layer=[1 transpose(a_superscript_2)];%(25x1)->(1x26)
     
-    z_superscript_3=Theta2*a_superscript_2;%10x26*(26x1)T=10x1
+    z_superscript_3=Theta2*transpose(hidden_layer);%10x26*(1x26)T=10x1
     a_superscript_3=sigmoid(z_superscript_3);%activation
     
     y_check=zeros(num_labels,1);%one hot encoding
@@ -55,14 +56,11 @@ for i=1:m
     delta_superscript_2=transpose(Theta2)*delta_superscript_3;%(26x10)*(10x1)=(26*1)
     delta_superscript_2=delta_superscript_2(2:end).*sigmoidGradient(z_superscript_2);%remove delta super2 sub0 and elementwise gprime(zsuper2)
     
-    Theta2_grad=Theta2_grad+(1/m)*delta_superscript_3*transpose(a_superscript_2);%(10x1)*(1x26)=(10x26)%backprpo without reg
-    Theta1_grad=Theta1_grad+(1/m)*delta_superscript_2*X(i,:);%(25x1)*(1x401)=(25x401)
-    
-
+    Theta2_grad(:,2:end)=Theta2_grad(:,2:end)+(1/m)*delta_superscript_3*transpose(a_superscript_2);%(10x1)*(1x25)=(10x25)
+    Theta1_grad(:,2:end)=Theta1_grad(:,2:end)+(1/m)*delta_superscript_2*X(m,2:end);%(25x1)*(1x400)=(25x400)
 end
-J=J+(lambda/(2*m))*(sum(sum(Theta1(:,2:end).^2)) +sum(sum(Theta2(:,2:end).^2)));%regularized term
-Theta2_grad(:,2:end)=Theta2_grad(:,2:end)+(lambda/m)*Theta2(:,2:end);
-Theta1_grad(:,2:end)=Theta1_grad(:,2:end)+(lambda/m)*Theta1(:,2:end);
+J=J+(lambda/(2*m))*(sum(sum(Theta1(:,2:end).^2)) +sum(sum(Theta2.^2)));%regularized term
+
 
 %
 % Part 2: Implement the backpropagation algorithm to compute the gradients
