@@ -18,18 +18,15 @@ grad = zeros(size(theta));
 %
 %               You should set J to the cost and grad to the gradient.
 %
+hypothesis=X*theta;
+J_cost_term=(1/(2*m))*sum((hypothesis-y).^2);
+J_reg_term=(lambda/(2*m))*sum(theta(2:end).^2);
+J=J+J_cost_term+J_reg_term;
 
-
-
-
-
-
-
-
-
-
-
-
+grad_cost_term=transpose((1/m)*sum((hypothesis-y).*X,1));
+grad_reg_term=(lambda/m)*theta;
+grad_reg_term(1)=0;
+grad=grad+grad_cost_term+grad_reg_term;
 % =========================================================================
 
 grad = grad(:);
