@@ -25,7 +25,11 @@ centroids = zeros(K, n);
 %
 % Note: You can use a for-loop over the centroids to compute this.
 %
-
+for i=1:K
+    location=find(idx==i);
+    centroid_number=length(location);
+    centroids(i,:)=sum(X(location,:),1)/centroid_number;
+end
 
 
 
